@@ -6,4 +6,4 @@ ignoreFlags: false
 useTunnel: true
 command: "$HELM_PLUGIN_DIR/bin/helm-update-config"
 hooks:
-  install: "$HELM_PLUGIN_DIR/scripts/install.sh"
+  install: "$HELM_PLUGIN_DIR/install.sh"

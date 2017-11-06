@@ -1,0 +1,9 @@
+name: "update-config"
+version: "0.1.0"
+usage: "update config of a running release"
+description: Update configuration values of a running release.
+ignoreFlags: false
+useTunnel: true
+command: "$HELM_PLUGIN_DIR/bin/helm-update-config"
+hooks:
+  install: "$HELM_PLUGIN_DIR/scripts/install.sh"

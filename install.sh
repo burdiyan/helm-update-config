@@ -14,7 +14,7 @@ url="https://github.com/burdiyan/helm-update-config/releases/download/v${PLUGIN_
 if command -v wget; then
   wget -O "${file}"  "${url}"
 elif command -v curl; then
-  curl -o "${file}" "${url}"
+  curl -o "${file}" -L "${url}"
 fi
 
 chmod +x "${file}"

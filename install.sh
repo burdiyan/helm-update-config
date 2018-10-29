@@ -2,7 +2,7 @@
 
 set -euf -o pipefail
 
-PLUGIN_VERSION=${PLUGIN_VERSION:-"0.2.0"}
+PLUGIN_VERSION=${PLUGIN_VERSION:-"0.3.0"}
 
 file="${HELM_PLUGIN_DIR:-"$(helm home)/plugins/helm-update-config"}/bin/helm-update-config"
 

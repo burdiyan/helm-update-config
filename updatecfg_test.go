@@ -10,18 +10,65 @@ import (
 )
 
 var _ = Describe("Updatecfg", func() {
+
+	var vf updatec.ValueFiles
+	BeforeEach(func() {
+		vf = updatec.ValueFiles{"test.yaml"}
+	})
+	// Test command line input with only --set-value.
 	It("GenerateUpdatedValues", func() {
-		vf := updatec.ValueFiles{"test.yaml"}
-		var values []string
-		values[0] = "--set-value=foo.bar=\"9\""
+		values := []string{"setvalue=1", "foo.bar=10"}
+		uValues, err := updatec.GenerateUpdatedValues(nil, values)
+
+		fmt.Println("latest value:", uValues)
+		fmt.Println("error:", err)
+
+		Expect(uValues["setvalue"]).To(Equal(int64(1)))
+
+	})
+
+	// Test command line input with only value file.
+	It("GenerateUpdatedValues", func() {
+		uValues, err := updatec.GenerateUpdatedValues(vf, nil)
+
+		fmt.Println("latest value:", uValues)
+		fmt.Println("error:", err)
+
+		uValuesNext := uValues["foo"]
+		result := map[string]interface{}{}
+		for k, v := range uValuesNext.(map[interface{}]interface{}) {
+			result[k.(string)] = v
+		}
+
+		Expect(result["bar"]).To(Equal(3))
+
+		Expect(uValues["teststr"]).To(Equal("origion"))
+		Expect(uValues["addmore"]).To(Equal(10))
+
+	})
+
+	// Test command line input with both --set-value and value file.
+	It("GenerateUpdatedValues", func() {
+		values := []string{"addmore=9", "newvalue=hello"}
 		uValues, err := updatec.GenerateUpdatedValues(vf, values)
 
-		fmt.Println(uValues)
+		fmt.Println("latest value:", uValues)
 		fmt.Println("error:", err)
-		Expect(true)
-		//		Expect(values[0].To(Equal("--set-value=foo.bar=\"9\"")))
-		//Expect(uValues["test"].To(Equal(1)))
-		//		Expect(uValues["foo"]["baz"].To(Equal(6)))
-		//		Expect(uValues["qux"]["uier"].To(Equal(false)))
+
+		Expect(uValues["testint"]).To(Equal(1))
+		Expect(uValues["addmore"]).To(Equal(int64(9)))
+		Expect(uValues["newvalue"]).To(Equal("hello"))
+	})
+
+	// Input parameter test.
+	It("GenerateUpdatedValues", func() {
+		values := []string{"setvalue=1"}
+		uValues, err := updatec.GenerateUpdatedValues(nil, values)
+
+		fmt.Println("latest value:", uValues)
+		fmt.Println("error:", err)
+
+		Expect(uValues["badvalue"]).Should(BeNil())
+
 	})
 })

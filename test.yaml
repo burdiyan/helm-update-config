@@ -4,4 +4,6 @@ foo:
   baz: 6
 qux:
   uier: false
-test: 1
+teststr: origion
+testint: 1
+addmore: 10

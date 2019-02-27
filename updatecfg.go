@@ -14,9 +14,8 @@ import (
 )
 
 type cmdFlags struct {
-	cliValues   []string
-	resetValues bool
-	valueFiles  ValueFiles
+	cliValues  []string
+	valueFiles ValueFiles
 }
 
 type ValueFiles []string
@@ -52,18 +51,16 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 			}
 
 			update := updateConfigCommand{
-				client:      helm.NewClient(helm.Host(os.Getenv("TILLER_HOST"))),
-				release:     args[0],
-				values:      flags.cliValues,
-				valueFiles:  flags.valueFiles,
-				resetValues: flags.resetValues,
+				client:     helm.NewClient(helm.Host(os.Getenv("TILLER_HOST"))),
+				release:    args[0],
+				values:     flags.cliValues,
+				valueFiles: flags.valueFiles,
 			}
 
 			return update.run()
 		},
 	}
 	cmd.Flags().StringArrayVar(&flags.cliValues, "set-value", []string{}, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
-	cmd.Flags().BoolVar(&flags.resetValues, "reset-values", false, "when upgrading, reset the values to the ones built into the chart")
 	cmd.Flags().VarP(&flags.valueFiles, "values", "f", "specify values in a YAML file")
 
 	if err := cmd.Execute(); err != nil {
@@ -74,11 +71,10 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 }
 
 type updateConfigCommand struct {
-	client      helm.Interface
-	release     string
-	values      []string
-	valueFiles  ValueFiles
-	resetValues bool
+	client     helm.Interface
+	release    string
+	values     []string
+	valueFiles ValueFiles
 }
 
 func (cmd *updateConfigCommand) run() error {
@@ -108,11 +104,7 @@ func (cmd *updateConfigCommand) run() error {
 	}
 
 	var opt helm.UpdateOption
-	if cmd.resetValues {
-		opt = helm.ResetValues(true)
-	} else {
-		opt = helm.ReuseValues(true)
-	}
+	opt = helm.ReuseValues(true)
 
 	_, err = cmd.client.UpdateReleaseFromChart(
 		ls.Releases[0].Name,
@@ -160,7 +152,7 @@ func mergeValues(dest map[string]interface{}, src map[string]interface{}) map[st
 	return dest
 }
 
-// GenerateUpdatedValues generates values from files specified via -f/--values and directly via --set-values, preferring values via --set-values
+// GenerateUpdatedValues generates values from files specified via -f/--values and directly via --set-value, preferring values via --set-value
 func GenerateUpdatedValues(valueFiles ValueFiles, values []string) (map[string]interface{}, error) {
 	base := map[string]interface{}{}
 

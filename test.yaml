@@ -1,0 +1,7 @@
+---
+foo:
+  bar: 3
+  baz: 6
+qux:
+  uier: false
+test: 1

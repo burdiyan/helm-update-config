@@ -9,7 +9,7 @@ file="${HELM_PLUGIN_DIR:-"$(helm home)/plugins/helm-update-config"}/bin/helm-upd
 mkdir -p $(dirname ${file})
 
 os=$(uname -s | tr '[:upper:]' '[:lower:]')
-url="https://github.com/burdiyan/helm-update-config/releases/download/v${PLUGIN_VERSION}/helm-update-config_${os}_amd64"
+url="https://github.com/bluebosh/helm-update-config/releases/download/v${PLUGIN_VERSION}/helm-update-config_${os}_amd64"
 
 if command -v wget; then
   wget -O "${file}"  "${url}"

@@ -18,9 +18,8 @@ helm update-config "cf.20190214.142635" --value=file_path1
 helm update-config "cf.20190214.142635" --set-value=image.tag=stable --value=file_path1
 ```
 
-For the last sample command, the plugin will merge the key/value pairs in set-value and --value
+For the last sample command, the plugin will merge the key/value pairs specified in both --set-value and --value file, if there are different keys specified in both --set-value and --value file, then --set-value will override the value in --value file.
 
-The plugin will reuse all the values defined in previous releases. If you want to override those you can set `--reset-values` flag the same way you do for `helm upgrade`.
 
 ## Maintainers
 

@@ -1,14 +1,22 @@
 sudo: false
 language: go
 go:
-  - 1.11.5
+- 1.11.5
 before_install:
 - go get github.com/tools/godep
 - go get github.com/onsi/ginkgo/ginkgo
 - go get github.com/golang/go/src/cmd/vet
 - go get github.com/onsi/gomega
+- go get github.com/pkg/errors
+- go get github.com/modocache/gover
+- go get github.com/mattn/goveralls
+- go get golang.org/x/tools/cmd/cover
+
 install: true
 script: bin/unit_test
 branches:
   only:
-    - emilyhelmupdate
+  - emilyhelmupdate
+env:
+  global:
+    secure: ebRuDI9tPi84E3hVLZpmmw+l1X2i0ItkD5PisNyWNXe3mLhHqbKjJde1aXIeadPLhay/PVQkec/tVA0S/+39a5+R/gyDcB9+Ozgln9gSkPcyZg9kvP3lL/BMqlAjuVVh3b0u+n2+nrDGDZ42fDaY2cEYmZkM+AhAHagjyNkR7mp7Aa2z3TkK08pXy99EoM1DRGjAMBt5rNevmfGfww7Xi/wpkBt2HVN5KyGl7mFMg6NQl7hUk8CUN6AFNJmZSY3hvfIDHjtv/XYQCUMR0E7kQ+mZLhYzj89WehovtRmcmiX/FKvhUkTHWLMd3f8rufgZ1GZvgLyUAaWEd+pbrY/hYsUn8Ep4TJ41Lm2zB2Dznr6Ucal8oG4azuW/tgFVEe4vYhiZ74teF5HBs2FqZfiYkXgTPuVm59KwYIzQFV5Kys3Ki61+a6MDEbGq2fAA5nLQ/GyBC3lUmWOTOlXERJFAdEQxRmx99CKCtQDf9bLjIyh+b41NGXAfE+sP8YUAgmF6yjTngd2xz1WaxKy8qMWT4pJ77lAs9NCvsGWjluIyYiLCho2pgyJWdfbug9SbwvRNZ1NzPx+WPf1JOzQ1wJKeM2ZdiLBvfS1f5B75LYGp/j6vRwQYNRNE2rIrsOCjff+44cKqYlINYmBhPMDQSAwstsudiZ2L/pyp04tX0UbhS94=

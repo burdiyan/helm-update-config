@@ -1,0 +1,15 @@
+sudo: false
+language: go
+go:
+  - 1.11.5
+before_install:
+- go get github.com/tools/godep
+- go get github.com/onsi/ginkgo/ginkgo
+- go get github.com/golang/go/src/cmd/vet
+- go get github.com/onsi/gomega
+install: true
+script: bin/unit_test
+branches:
+  only:
+- emilyhelmupdate 
+

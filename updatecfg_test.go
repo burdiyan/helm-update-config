@@ -20,31 +20,31 @@ var _ = Describe("Updatecfg", func() {
 		values := []string{"setvalue=1", "foo.bar=10"}
 		uValues, err := updatec.GenerateUpdatedValues(nil, values)
 
-		fmt.Println("latest value:", uValues)
-		fmt.Println("error:", err)
-
-		Expect(uValues["setvalue"]).To(Equal(int64(1)))
+		if err != nil {
+			fmt.Errorf("GenerateUpdatedValues returned: %s", err)
+		} else {
+			Expect(uValues["setvalue"]).To(Equal(int64(1)))
+		}
 
 	})
 
 	// Test command line input with only value file.
 	It("GenerateUpdatedValues", func() {
 		uValues, err := updatec.GenerateUpdatedValues(vf, nil)
+		if err != nil {
+			fmt.Errorf("GenerateUpdatedValues returned: %s", err)
+		} else {
+			uValuesNext := uValues["foo"]
+			result := map[string]interface{}{}
+			for k, v := range uValuesNext.(map[interface{}]interface{}) {
+				result[k.(string)] = v
+			}
 
-		fmt.Println("latest value:", uValues)
-		fmt.Println("error:", err)
+			Expect(result["bar"]).To(Equal(3))
 
-		uValuesNext := uValues["foo"]
-		result := map[string]interface{}{}
-		for k, v := range uValuesNext.(map[interface{}]interface{}) {
-			result[k.(string)] = v
+			Expect(uValues["teststr"]).To(Equal("origion"))
+			Expect(uValues["addmore"]).To(Equal(10))
 		}
-
-		Expect(result["bar"]).To(Equal(3))
-
-		Expect(uValues["teststr"]).To(Equal("origion"))
-		Expect(uValues["addmore"]).To(Equal(10))
-
 	})
 
 	// Test command line input with both --set-value and value file.
@@ -52,23 +52,23 @@ var _ = Describe("Updatecfg", func() {
 		values := []string{"addmore=9", "newvalue=hello"}
 		uValues, err := updatec.GenerateUpdatedValues(vf, values)
 
-		fmt.Println("latest value:", uValues)
-		fmt.Println("error:", err)
-
-		Expect(uValues["testint"]).To(Equal(1))
-		Expect(uValues["addmore"]).To(Equal(int64(9)))
-		Expect(uValues["newvalue"]).To(Equal("hello"))
+		if err != nil {
+			fmt.Errorf("GenerateUpdatedValues returned: %s", err)
+		} else {
+			Expect(uValues["testint"]).To(Equal(1))
+			Expect(uValues["addmore"]).To(Equal(int64(9)))
+			Expect(uValues["newvalue"]).To(Equal("hello"))
+		}
 	})
 
 	// Input parameter test.
 	It("GenerateUpdatedValues", func() {
 		values := []string{"setvalue=1"}
 		uValues, err := updatec.GenerateUpdatedValues(nil, values)
-
-		fmt.Println("latest value:", uValues)
-		fmt.Println("error:", err)
-
-		Expect(uValues["badvalue"]).Should(BeNil())
-
+		if err != nil {
+			fmt.Errorf("GenerateUpdatedValues returned: %s", err)
+		} else {
+			Expect(uValues["badvalue"]).Should(BeNil())
+		}
 	})
 })

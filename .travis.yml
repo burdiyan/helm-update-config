@@ -11,5 +11,4 @@ install: true
 script: bin/unit_test
 branches:
   only:
-- emilyhelmupdate 
-
+    - emilyhelmupdate

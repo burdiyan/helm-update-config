@@ -12,7 +12,7 @@ before_install:
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
 install: true
-script: bin/unit_test
+script: bin/travis_unit_test
 branches:
   only:
   - master

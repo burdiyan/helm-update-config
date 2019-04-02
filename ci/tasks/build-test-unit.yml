@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: 1.11.5
+
+inputs:
+  - name: helm-update-config
+
+run:
+  
+  path: helm-update-config/ci/tasks/build-test-unit.sh

@@ -1,0 +1,21 @@
+---
+groups:
+  - name: all
+    jobs:
+     - build-test-unit
+
+jobs:
+  - name: build-test-unit
+    plan:
+      - get: helm-update-config
+        trigger: true
+      - task: build-test-unit
+        file: helm-update-config/ci/tasks/build-test-unit.yml
+
+resources:
+  - name: helm-update-config
+    type: git
+    source:
+      uri: https://github.com/bluebosh/helm-update-config.git
+      branch: emilyhelmupdate
+

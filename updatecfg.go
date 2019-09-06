@@ -11,11 +11,13 @@ import (
 	yaml "gopkg.in/yaml.v1"
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/strvals"
+	"k8s.io/helm/pkg/tlsutil"
 )
 
 type cmdFlags struct {
 	cliValues  []string
 	valueFiles ValueFiles
+	useTLS     bool
 }
 
 type ValueFiles []string
@@ -50,11 +52,30 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 				}
 			}
 
+			options := []helm.Option{helm.Host(os.Getenv("TILLER_HOST"))}
+
+			if flags.useTLS {
+				tlsopts := tlsutil.Options{
+					ServerName:         os.Getenv("TILLER_HOST"),
+					KeyFile:            os.Getenv("HELM_HOME") + "/key.pem",  //helm_env.DefaultTLSKeyFile,
+					CertFile:           os.Getenv("HELM_HOME") + "/cert.pem", //helm_env.DefaultTLSCert,
+					InsecureSkipVerify: true,
+				}
+
+				tlscfg, err := tlsutil.ClientConfig(tlsopts)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(2)
+				}
+				options = append(options, helm.WithTLS(tlscfg))
+			}
+
 			update := updateConfigCommand{
-				client:     helm.NewClient(helm.Host(os.Getenv("TILLER_HOST"))),
+				client:     helm.NewClient(options...),
 				release:    args[0],
 				values:     flags.cliValues,
 				valueFiles: flags.valueFiles,
+				useTLS:     flags.useTLS,
 			}
 
 			return update.run()
@@ -62,6 +83,7 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 	}
 	cmd.Flags().StringArrayVar(&flags.cliValues, "set-value", []string{}, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	cmd.Flags().VarP(&flags.valueFiles, "values", "f", "specify values in a YAML file")
+	cmd.Flags().BoolVar(&flags.useTLS, "tls", false, "Use TLS in helm Client interactions")
 
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
@@ -75,6 +97,7 @@ type updateConfigCommand struct {
 	release    string
 	values     []string
 	valueFiles ValueFiles
+	useTLS     bool
 }
 
 func (cmd *updateConfigCommand) run() error {

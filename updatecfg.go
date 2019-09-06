@@ -83,9 +83,15 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 
 			if flags.TLSEnable {
 
+				tlsServerName := ""
 				tlsCaCertFile := DefaultTLSCaCert
 				tlsKeyFile := DefaultTLSKeyFile
 				tlsCertFile := DefaultTLSCert
+				if flags.TLSServerName != "" {
+					tlsServerName = flags.TLSServerName
+				} else {
+					tlsServerName = os.Getenv("TILLER_HOST")
+				}
 				if flags.TLSCaCertFile != "" {
 					tlsCaCertFile = flags.TLSCaCertFile
 				} else {
@@ -103,7 +109,7 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 				}
 
 				tlsopts := tlsutil.Options{
-					ServerName:         os.Getenv("TILLER_HOST"),
+					ServerName:         tlsServerName,
 					CaCertFile:         tlsCaCertFile,
 					KeyFile:            tlsKeyFile,
 					CertFile:           tlsCertFile,
@@ -132,7 +138,7 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 	cmd.Flags().StringArrayVar(&flags.cliValues, "set-value", []string{}, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	cmd.Flags().VarP(&flags.valueFiles, "values", "f", "specify values in a YAML file")
 
-	cmd.Flags().StringVar(&flags.TLSServerName, "tls-hostname", flags.TillerHost, "The server name used to verify the hostname on the returned certificates from the server")
+	cmd.Flags().StringVar(&flags.TLSServerName, "tls-hostname", "", "The server name used to verify the hostname on the returned certificates from the server")
 	cmd.Flags().StringVar(&flags.TLSCaCertFile, "tls-ca-cert", DefaultTLSCaCert, "Path to TLS CA certificate file")
 	cmd.Flags().StringVar(&flags.TLSCertFile, "tls-cert", DefaultTLSCert, "Path to TLS certificate file")
 	cmd.Flags().StringVar(&flags.TLSKeyFile, "tls-key", DefaultTLSKeyFile, "Path to TLS key file")

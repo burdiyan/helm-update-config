@@ -1,0 +1,9 @@
+---
+foo:
+  bar: 3
+  baz: 6
+qux:
+  uier: false
+teststr: origion
+testint: 1
+addmore: 10

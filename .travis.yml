@@ -1,0 +1,21 @@
+sudo: false
+language: go
+go:
+- 1.11.5
+before_install:
+- go get github.com/tools/godep
+- go get github.com/onsi/ginkgo/ginkgo
+- go get github.com/golang/go/src/cmd/vet
+- go get github.com/onsi/gomega
+- go get github.com/pkg/errors
+- go get github.com/modocache/gover
+- go get github.com/mattn/goveralls
+- go get golang.org/x/tools/cmd/cover
+install: true
+script: bin/travis_unit_test
+branches:
+  only:
+  - master
+env:
+  global:
+  - secure: sZFkmUSyD/z824Q4GDikznF2tIeSnAhoi/6tfSOgtSPZDQ1qVxZb+Mu7BeXLbXJloFIe39IiPj095oSsUuL3hvubN7GobIQyEwYX9ySsbekNtsyMAEzR0Gfv1KSOng3099w2wWICZaIxmWoMZpTPAi9UOHp4lETdn19oblgsYJ38aphZqvOXf1uE7BAMFH89lUv2ZIZRq59PveseKBjdjJteIKsAnugs+B2wxLlrKSr+jOxDGq/PTIRg8BaUVuUBGCd/rauLY8081uVRxx9cyez8o1PlGUbbXwMhOR4D6z9giIWrcigJxWzyGACM4OtJqfzPi5u6ublxDHYLSKqTy5nsRTF/2zwKPIw/6+mIs3N6KNpZgwX2p66uRhemE/v4z+WIC6aO8rcBuQwUmqLYnTdte5rlVkJJYKkKOFo3Bsmp0hoBo5RyEW15v+QebjVmhh4wbHWJ1lxW57tJoxAp1NoILo96O1g2RtDM6L0wzvGAj4Ii55OKO5Cd/MTdG4MN6airdC/JCgvZJCSEzAEoeTYt5WpLwne9sgfDk7LDfT1jNfYa2D81/omThRfqmBx2QnWvPgnbYKVbd6H0fpUlXrIB4RAFS/GCPTkgLYbL9fwnLP/EjXodAOjp9jonKa7uC2XNd+Qnqj8yFubu0N4Z8UQfMO0JzidDJcE2q9Ko9yU=

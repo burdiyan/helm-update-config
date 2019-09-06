@@ -14,10 +14,37 @@ import (
 	"k8s.io/helm/pkg/tlsutil"
 )
 
+const (
+	// DefaultTLSCaCert is the default value for HELM_TLS_CA_CERT
+	DefaultTLSCaCert = "$HELM_HOME/ca.pem"
+	// DefaultTLSCert is the default value for HELM_TLS_CERT
+	DefaultTLSCert = "$HELM_HOME/cert.pem"
+	// DefaultTLSKeyFile is the default value for HELM_TLS_KEY_FILE
+	DefaultTLSKeyFile = "$HELM_HOME/key.pem"
+	// DefaultTLSEnable is the default value for HELM_TLS_ENABLE
+	DefaultTLSEnable = false
+	// DefaultTLSVerify is the default value for HELM_TLS_VERIFY
+	DefaultTLSVerify = false
+)
+
 type cmdFlags struct {
 	cliValues  []string
 	valueFiles ValueFiles
-	useTLS     bool
+
+	// TillerHost is the host and port of Tiller.
+	TillerHost string
+	// TLSEnable tells helm to communicate with Tiller via TLS
+	TLSEnable bool
+	// TLSVerify tells helm to communicate with Tiller via TLS and to verify remote certificates served by Tiller
+	TLSVerify bool
+	// TLSServerName tells helm to verify the hostname on the returned certificates from Tiller
+	TLSServerName string
+	// TLSCaCertFile is the path to a TLS CA certificate file
+	TLSCaCertFile string
+	// TLSCertFile is the path to a TLS certificate file
+	TLSCertFile string
+	// TLSKeyFile is the path to a TLS key file
+	TLSKeyFile string
 }
 
 type ValueFiles []string
@@ -54,11 +81,38 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 
 			options := []helm.Option{helm.Host(os.Getenv("TILLER_HOST"))}
 
-			if flags.useTLS {
+			if flags.TLSEnable {
+
+				tlsServerName := ""
+				tlsCaCertFile := DefaultTLSCaCert
+				tlsKeyFile := DefaultTLSKeyFile
+				tlsCertFile := DefaultTLSCert
+				if flags.TLSServerName != "" {
+					tlsServerName = flags.TLSServerName
+				} else {
+					tlsServerName = os.Getenv("TILLER_HOST")
+				}
+				if flags.TLSCaCertFile != "" {
+					tlsCaCertFile = flags.TLSCaCertFile
+				} else {
+					tlsCaCertFile = os.Getenv("HELM_HOME") + "/ca.pem"
+				}
+				if flags.TLSKeyFile != "" {
+					tlsKeyFile = flags.TLSKeyFile
+				} else {
+					tlsKeyFile = os.Getenv("HELM_HOME") + "/key.pem"
+				}
+				if flags.TLSCertFile != "" {
+					tlsCertFile = flags.TLSCertFile
+				} else {
+					tlsCertFile = os.Getenv("HELM_HOME") + "/cert.pem"
+				}
+
 				tlsopts := tlsutil.Options{
-					ServerName:         os.Getenv("TILLER_HOST"),
-					KeyFile:            os.Getenv("HELM_HOME") + "/key.pem",  //helm_env.DefaultTLSKeyFile,
-					CertFile:           os.Getenv("HELM_HOME") + "/cert.pem", //helm_env.DefaultTLSCert,
+					ServerName:         tlsServerName,
+					CaCertFile:         tlsCaCertFile,
+					KeyFile:            tlsKeyFile,
+					CertFile:           tlsCertFile,
 					InsecureSkipVerify: true,
 				}
 
@@ -75,7 +129,7 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 				release:    args[0],
 				values:     flags.cliValues,
 				valueFiles: flags.valueFiles,
-				useTLS:     flags.useTLS,
+				useTLS:     flags.TLSEnable,
 			}
 
 			return update.run()
@@ -83,7 +137,13 @@ func newUpdatecfgCmd(client helm.Interface) *cobra.Command {
 	}
 	cmd.Flags().StringArrayVar(&flags.cliValues, "set-value", []string{}, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	cmd.Flags().VarP(&flags.valueFiles, "values", "f", "specify values in a YAML file")
-	cmd.Flags().BoolVar(&flags.useTLS, "tls", false, "Use TLS in helm Client interactions")
+
+	cmd.Flags().StringVar(&flags.TLSServerName, "tls-hostname", "", "The server name used to verify the hostname on the returned certificates from the server")
+	cmd.Flags().StringVar(&flags.TLSCaCertFile, "tls-ca-cert", DefaultTLSCaCert, "Path to TLS CA certificate file")
+	cmd.Flags().StringVar(&flags.TLSCertFile, "tls-cert", DefaultTLSCert, "Path to TLS certificate file")
+	cmd.Flags().StringVar(&flags.TLSKeyFile, "tls-key", DefaultTLSKeyFile, "Path to TLS key file")
+	cmd.Flags().BoolVar(&flags.TLSVerify, "tls-verify", DefaultTLSVerify, "Enable TLS for request and verify remote")
+	cmd.Flags().BoolVar(&flags.TLSEnable, "tls", DefaultTLSEnable, "Use TLS in helm Client interactions")
 
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)

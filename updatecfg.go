@@ -169,6 +169,18 @@ func (cmd *updateConfigCommand) run() error {
 		return err
 	}
 
+	if ls == nil {
+		return errors.New("[ERROR] Release list is nil.")
+	}
+
+	if len(ls.Releases) == 0 {
+		return errors.New("[ERROR] Release list is none.")
+	}
+
+	if ls.Releases[0].Config == nil {
+		return errors.New("[ERROR] Release config is nil.")
+	}
+
 	var preVals map[string]interface{}
 	err = yaml.Unmarshal([]byte(ls.Releases[0].Config.Raw), &preVals)
 	if err != nil {
